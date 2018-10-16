@@ -82,8 +82,8 @@ These variables may be modified, but do not need to be modified.
 The variables are used throughout the installation procedure.
 
 ```console
-export GIT_ACCOUNT=docktermj
-export GIT_REPOSITORY=senzing-repository-template
+export GIT_ACCOUNT=senzing
+export GIT_REPOSITORY=docker-python-base
 ```
 
 Synthesize environment variables.
