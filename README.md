@@ -14,7 +14,7 @@ To see a demonstration of senzing, python, and mysql, see
 ### Contents
 
 1. [Demonstrate](#demonstrate)
-    1. [Create docker container](#create-docker-container)
+    1. [Build docker image](#build-docker-image)
     1. [Create SENZING_DIR](#create-senzing_dir)
     1. [Set environment variables for demonstration](#set-environment-variables-for-demonstration)
     1. [Run docker container](#run-docker-container)
@@ -26,7 +26,7 @@ To see a demonstration of senzing, python, and mysql, see
 
 ## Demonstrate
 
-### Create docker container
+### Build docker image
 
 ```console
 docker build --tag senzing/python-base https://github.com/senzing/docker-python-base.git
