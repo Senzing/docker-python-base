@@ -5,7 +5,7 @@ VERSION=1.0.0
 
 # A file used to determine if/when this program has previously run.
 
-SENTINAL_FILE=/opt/senzing/docker-runs.log
+SENTINEL_FILE=/opt/senzing/docker-runs.log
 
 # Return codes
 
@@ -47,9 +47,9 @@ else
     -e "\$a[${SCHEMA}]\nDriver = ${UPPERCASE_DRIVER}\nDatabase = ${SCHEMA}\nServer = ${HOST}\nPort = ${PORT}\n" \
     /etc/odbc.ini
 
-  # Modify files in mounted volume, if needed.  The "sentinal file" is created after first run.
+  # Modify files in mounted volume, if needed.  The "sentinel file" is created after first run.
 
-  if [ ! -f ${SENTINAL_FILE} ]; then
+  if [ ! -f ${SENTINEL_FILE} ]; then
 
     sed -i.$(date +%s) \
       -e "s|G2Connection=sqlite3://na:na@/opt/senzing/g2/sqldb/G2C.db|G2Connection=${NEW_SENZING_DATABASE_URL}|" \
@@ -68,10 +68,10 @@ if [ ! -f /opt/senzing/g2/lib/libmysqlclient.so.21 ]; then
   cp /usr/lib64/mysql/libmysqlclient.so.21 /opt/senzing/g2/lib
 fi
 
-# Append to a "sentinal file" to indicate when this script has been run.
-# The sentinal file is used to identify the first run from subsequent runs for "first-time" processing.
+# Append to a "sentinel file" to indicate when this script has been run.
+# The sentinel file is used to identify the first run from subsequent runs for "first-time" processing.
 
-echo "$(date)" >> ${SENTINAL_FILE}
+echo "$(date)" >> ${SENTINEL_FILE}
 
 # Run the command specified by the parameters.
 
