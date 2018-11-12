@@ -39,5 +39,5 @@ RUN wget https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-community-libs-8.0.
 
 # Run-time command
 
-ENTRYPOINT ["/app/senzing-configuration-changes.sh"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["python"]
