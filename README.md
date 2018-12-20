@@ -16,13 +16,13 @@ To see a demonstration of senzing, python, and mysql, see
 1. [Demonstrate](#demonstrate)
     1. [Build docker image](#build-docker-image)
     1. [Create SENZING_DIR](#create-senzing_dir)
-    1. [Set environment variables for demonstration](#set-environment-variables-for-demonstration)
+    1. [Configuration](#configuration)
     1. [Run docker container](#run-docker-container)
 1. [Develop](#develop)
     1. [Prerequisite software](#prerequisite-software)
     1. [Set environment variables for development](#set-environment-variables-for-development)
     1. [Clone repository](#clone-repository)
-    1. [Build docker image](#build-docker-image)
+    1. [Build docker image for development](#build-docker-image-for-development)
 
 ## Demonstrate
 
@@ -34,116 +34,72 @@ docker build --tag senzing/python-base https://github.com/senzing/docker-python-
 
 ### Create SENZING_DIR
 
-If you do not already have an `/opt/senzing` directory on your local system, here's how to install the code.
+1. If you do not already have an `/opt/senzing` directory on your local system, visit
+   [HOWTO - Create SENZING_DIR](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/create-senzing-dir.md).
 
-1. Set environment variable
+### Configuration
 
-    ```console
-    export SENZING_DIR=/opt/senzing
-    ```
-
-1. Download [Senzing_API.tgz](https://s3.amazonaws.com/public-read-access/SenzingComDownloads/Senzing_API.tgz)
-
-    ```console
-    curl -X GET \
-      --output /tmp/Senzing_API.tgz \
-      https://s3.amazonaws.com/public-read-access/SenzingComDownloads/Senzing_API.tgz
-    ```
-
-1. Extract [Senzing_API.tgz](https://s3.amazonaws.com/public-read-access/SenzingComDownloads/Senzing_API.tgz)
-   to `${SENZING_DIR}`.
-
-    1. Linux
-
-        ```console
-        sudo mkdir -p ${SENZING_DIR}
-
-        sudo tar \
-          --extract \
-          --owner=root \
-          --group=root \
-          --no-same-owner \
-          --no-same-permissions \
-          --directory=${SENZING_DIR} \
-          --file=/tmp/Senzing_API.tgz
-        ```
-
-    1. macOS
-        ```console
-        sudo mkdir -p ${SENZING_DIR}
-
-        sudo tar \
-          --extract \
-          --no-same-owner \
-          --no-same-permissions \
-          --directory=${SENZING_DIR} \
-          --file=/tmp/Senzing_API.tgz
-        ```
-
-### Set environment variables for demonstration
-
-1. Identify the database username and password.
-   Example:
-
-    ```console
-    export MYSQL_USERNAME=root
-    export MYSQL_PASSWORD=root
-    ```
-
-1. Identify the database that is the target of the SQL statements.
-   Example:
-
-    ```console
-    export MYSQL_DATABASE=G2
-    ```
-
-1. Identify the host running mySQL server.
-   Example:
-
-    ```console
-    docker ps
-
-    # Choose value from NAMES column of docker ps
-    export MYSQL_HOST=docker-container-name
-    ```
+- **SENZING_DATABASE_URL** -
+  Database URI in the form: `${DATABASE_PROTOCOL}://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_DATABASE}`
+- **SENZING_DIR** -
+  Location of Senzing libraries. Default: "/opt/senzing".
 
 ### Run docker container
 
-1. Option #1 - Run the docker container without database or volumes.
+1. Option #1 - Run the docker container without database or volumes. Example:
 
     ```console
     docker run -it \
       senzing/python-base
     ```
 
-1. Option #2 - Run the docker container with database and volumes.
+1. Option #2 - Run the docker container with database and volumes.  Example:
 
     ```console
+    export DATABASE_PROTOCOL=mysql
+    export DATABASE_USERNAME=root
+    export DATABASE_PASSWORD=root
+    export DATABASE_HOST=senzing-mysql
+    export DATABASE_PORT=3306
+    export DATABASE_DATABASE=G2
+
+    export SENZING_DATABASE_URL="${DATABASE_PROTOCOL}://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_DATABASE}"
+    export SENZING_DIR=/opt/senzing
+
     docker run -it  \
       --volume ${SENZING_DIR}:/opt/senzing \
-      --env SENZING_DATABASE_URL="mysql://${MYSQL_USERNAME}:${MYSQL_PASSWORD}@${MYSQL_HOST}:3306/${MYSQL_DATABASE}" \
+      --env SENZING_DATABASE_URL="${SENZING_DATABASE_URL}" \
       senzing/python-base
     ```
 
-1. Option #3 - Run the docker container accessing a database in a docker network.
+1. Option #3 - Run the docker container accessing a database in a docker network. Example:
 
-   Identify the Docker network of the mySQL database.
-   Example:
+   Determine docker network. Example:
 
     ```console
     docker network ls
 
     # Choose value from NAME column of docker network ls
-    export MYSQL_NETWORK=nameofthe_network
+    export SENZING_NETWORK=nameofthe_network
     ```
 
-    Run docker container.
+    Run docker container. Example:
 
     ```console
+    export DATABASE_PROTOCOL=mysql
+    export DATABASE_USERNAME=root
+    export DATABASE_PASSWORD=root
+    export DATABASE_HOST=senzing-mysql
+    export DATABASE_PORT=3306
+    export DATABASE_DATABASE=G2
+
+    export SENZING_DATABASE_URL="${DATABASE_PROTOCOL}://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_DATABASE}"
+    export SENZING_DIR=/opt/senzing
+
     docker run -it  \
       --volume ${SENZING_DIR}:/opt/senzing \
-      --net ${MYSQL_NETWORK} \
-      --env SENZING_DATABASE_URL="mysql://${MYSQL_USERNAME}:${MYSQL_PASSWORD}@${MYSQL_HOST}:3306/${MYSQL_DATABASE}" \
+      --net ${SENZING_NETWORK} \
+      --env SENZING_DATABASE_URL="${SENZING_DATABASE_URL}" \
       senzing/python-base
     ```
 
@@ -201,7 +157,7 @@ docker run hello-world
     git clone ${GIT_REPOSITORY_URL}
     ```
 
-### Build docker image
+### Build docker image for development
 
 1. Option #1 - Using make command
 
