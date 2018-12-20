@@ -19,6 +19,12 @@ if [ "$1" == "--version" ]; then
   exit ${OK}
 fi
 
+if [ "$1" == "--sleep" ]; then
+  echo "Sleeping"
+  sleep 1d
+  exit ${OK}
+fi
+
 # Make modifications based on SENZING_DATABASE_URL value.
 
 if [ -z "${SENZING_DATABASE_URL}" ]; then
@@ -27,7 +33,7 @@ else
 
   # Parse the SENZING_DATABASE_URL.
 
-  PROTOCOL="$(echo ${SENZING_DATABASE_URL} | sed -e's,^\(.*://\).*,\1,g')"
+  PROTOCOL="$(echo ${SENZING_DATABASE_URL} | sed -e's,^\(.*\)://.*,\1,g')"
   DRIVER="$(echo ${SENZING_DATABASE_URL} | cut -d ':' -f1)"
   UPPERCASE_DRIVER=$(echo "${DRIVER}" | tr '[:lower:]' '[:upper:]')
   USERNAME="$(echo ${SENZING_DATABASE_URL} | cut -d '/' -f3 | cut -d ':' -f1)"
@@ -37,14 +43,20 @@ else
   SCHEMA="$(echo ${SENZING_DATABASE_URL} | cut -d '/' -f4)"
 
   # Construct Senzing version of database URL.
-
-  NEW_SENZING_DATABASE_URL="mysql://${USERNAME}:${PASSWORD}@${HOST}:${PORT}/?schema=${SCHEMA}"
+  
+  NEW_SENZING_DATABASE_URL=""
+  if [ "${PROTOCOL}" == "mysql" ]; then
+    NEW_SENZING_DATABASE_URL="${PROTOCOL}://${USERNAME}:${PASSWORD}@${HOST}:${PORT}/?schema=${SCHEMA}"
+  fi
 
   # Modify files in docker's Union File System.
 
-  echo "" >> /etc/odbc.ini
   sed -i.$(date +%s) \
-    -e "\$a[${SCHEMA}]\nDriver = ${UPPERCASE_DRIVER}\nDatabase = ${SCHEMA}\nServer = ${HOST}\nPort = ${PORT}\n" \
+    -e "s/{SCHEMA}/${SCHEMA}/" \
+    -e "s/{DRIVER}/${UPPERCASE_DRIVER}/" \
+    -e "s/{HOST}/${HOST}/" \
+    -e "s/{PORT}/${PORT}/" \
+    -e "s/{SCHEMA}/${SCHEMA}/" \
     /etc/odbc.ini
 
   # Modify files in mounted volume, if needed.  The "sentinel file" is created after first run.
@@ -64,8 +76,9 @@ fi
 
 # Work-around https://senzing.zendesk.com/hc/en-us/articles/360009212393-MySQL-V8-0-ODBC-client-alongside-V5-x-Server
 
-if [ ! -f /opt/senzing/g2/lib/libmysqlclient.so.21 ]; then
-  cp /usr/lib64/mysql/libmysqlclient.so.21 /opt/senzing/g2/lib
+if [ ! -f /opt/senzing/g2/lib/centos/libmysqlclient.so.21 ]; then
+  mkdir -p /opt/senzing/g2/lib/centos
+  cp /usr/lib64/mysql/libmysqlclient.so.21 /opt/senzing/g2/lib/centos
 fi
 
 # Append to a "sentinel file" to indicate when this script has been run.
