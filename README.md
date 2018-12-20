@@ -83,7 +83,7 @@ docker build --tag senzing/python-base https://github.com/senzing/docker-python-
     export SENZING_NETWORK=nameofthe_network
     ```
 
-    Run docker container.
+    Run docker container. Example:
 
     ```console
     export DATABASE_PROTOCOL=mysql
