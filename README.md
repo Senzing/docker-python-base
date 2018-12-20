@@ -46,10 +46,13 @@ docker build --tag senzing/python-base https://github.com/senzing/docker-python-
 
 ### Run docker container
 
-1. Option #1 - Run the docker container without database or volumes. Example:
+1. Option #1 - Run the docker container with volumes and internal database. Example:
 
     ```console
+    export SENZING_DIR=/opt/senzing
+
     docker run -it \
+      --volume ${SENZING_DIR}:/opt/senzing \
       senzing/python-base
     ```
 
