@@ -5,7 +5,7 @@ VERSION=1.0.0
 
 # A file used to determine if/when this program has previously run.
 
-SENTINEL_FILE=/opt/senzing/docker-runs.sentinel
+SENTINEL_FILE=${SENZING_ROOT}/docker-runs.sentinel
 
 # Return codes
 
@@ -64,21 +64,21 @@ else
   if [ ! -f ${SENTINEL_FILE} ]; then
 
     sed -i.$(date +%s) \
-      -e "s|G2Connection=sqlite3://na:na@/opt/senzing/g2/sqldb/G2C.db|G2Connection=${NEW_SENZING_DATABASE_URL}|" \
-      /opt/senzing/g2/python/G2Project.ini
+      -e "s|G2Connection=sqlite3://na:na@${SENZING_ROOT}/g2/sqldb/G2C.db|G2Connection=${NEW_SENZING_DATABASE_URL}|" \
+      ${SENZING_ROOT}/g2/python/G2Project.ini
 
     sed -i.$(date +%s) \
-      -e "s|CONNECTION=sqlite3://na:na@/opt/senzing/g2/sqldb/G2C.db|CONNECTION=${NEW_SENZING_DATABASE_URL}|" \
-      /opt/senzing/g2/python/G2Module.ini
+      -e "s|CONNECTION=sqlite3://na:na@${SENZING_ROOT}/g2/sqldb/G2C.db|CONNECTION=${NEW_SENZING_DATABASE_URL}|" \
+      ${SENZING_ROOT}/g2/python/G2Module.ini
 
   fi
 fi
 
 # Work-around https://senzing.zendesk.com/hc/en-us/articles/360009212393-MySQL-V8-0-ODBC-client-alongside-V5-x-Server
 
-if [ ! -f /opt/senzing/g2/lib/centos/libmysqlclient.so.21 ]; then
-  mkdir -p /opt/senzing/g2/lib/centos
-  cp /usr/lib64/mysql/libmysqlclient.so.21 /opt/senzing/g2/lib/centos
+if [ ! -f ${SENZING_ROOT}/g2/lib/centos/libmysqlclient.so.21 ]; then
+  mkdir -p ${SENZING_ROOT}/g2/lib/centos
+  cp /usr/lib64/mysql/libmysqlclient.so.21 ${SENZING_ROOT}/g2/lib/centos
 fi
 
 # Append to a "sentinel file" to indicate when this script has been run.
