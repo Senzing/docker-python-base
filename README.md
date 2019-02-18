@@ -13,6 +13,10 @@ To see a demonstration of senzing, python, and mysql, see
 
 ### Contents
 
+1. [Expectations](#expectations)
+    1. [Space](#space)
+    1. [Time](#time)
+    1. [Background knowledge](#background-knowledge)
 1. [Demonstrate](#demonstrate)
     1. [Build docker image](#build-docker-image)
     1. [Create SENZING_DIR](#create-senzing_dir)
@@ -24,12 +28,28 @@ To see a demonstration of senzing, python, and mysql, see
     1. [Clone repository](#clone-repository)
     1. [Build docker image for development](#build-docker-image-for-development)
 
+## Expectations
+
+### Space
+
+This repository and demonstration require 6 GB free disk space.
+
+### Time
+
+Budget 40 minutes to get the demonstration up-and-running, depending on CPU and network speeds.
+
+### Background knowledge
+
+This repository assumes a working knowledge of:
+
+1. [Docker](https://github.com/Senzing/knowledge-base/blob/master/WHATIS/docker.md)
+
 ## Demonstrate
 
 ### Build docker image
 
 ```console
-docker build --tag senzing/python-base https://github.com/senzing/docker-python-base.git
+sudo docker build --tag senzing/python-base https://github.com/senzing/docker-python-base.git
 ```
 
 ### Create SENZING_DIR
@@ -46,17 +66,17 @@ docker build --tag senzing/python-base https://github.com/senzing/docker-python-
 
 ### Run docker container
 
-1. Option #1 - Run the docker container with volumes and internal database. Example:
+1. Variation #1 - Run the docker container with external volumes and internal database. Example:
 
     ```console
     export SENZING_DIR=/opt/senzing
 
-    docker run -it \
+    sudo docker run -it \
       --volume ${SENZING_DIR}:/opt/senzing \
       senzing/python-base
     ```
 
-1. Option #2 - Run the docker container with database and volumes.  Example:
+1. Variation #2 - Run the docker container with external database and volumes.  Example:
 
     ```console
     export DATABASE_PROTOCOL=mysql
@@ -69,18 +89,18 @@ docker build --tag senzing/python-base https://github.com/senzing/docker-python-
     export SENZING_DATABASE_URL="${DATABASE_PROTOCOL}://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_DATABASE}"
     export SENZING_DIR=/opt/senzing
 
-    docker run -it  \
+    sudo docker run -it  \
       --volume ${SENZING_DIR}:/opt/senzing \
       --env SENZING_DATABASE_URL="${SENZING_DATABASE_URL}" \
       senzing/python-base
     ```
 
-1. Option #3 - Run the docker container accessing a database in a docker network. Example:
+1. Variation #3 - Run the docker container accessing an external database in a docker network. Example:
 
    Determine docker network. Example:
 
     ```console
-    docker network ls
+    sudo docker network ls
 
     # Choose value from NAME column of docker network ls
     export SENZING_NETWORK=nameofthe_network
@@ -99,7 +119,7 @@ docker build --tag senzing/python-base https://github.com/senzing/docker-python-
     export SENZING_DATABASE_URL="${DATABASE_PROTOCOL}://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_DATABASE}"
     export SENZING_DIR=/opt/senzing
 
-    docker run -it  \
+    sudo docker run -it  \
       --volume ${SENZING_DIR}:/opt/senzing \
       --net ${SENZING_NETWORK} \
       --env SENZING_DATABASE_URL="${SENZING_DATABASE_URL}" \
@@ -114,22 +134,31 @@ The following software programs need to be installed.
 
 #### git
 
-```console
-git --version
-```
+1. [Install Git](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/install-git.md)
+1. Test
+
+    ```console
+    git --version
+    ```
 
 #### make
 
-```console
-make --version
-```
+1. [Install make](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/install-make.md)
+1. Test
+
+    ```console
+    make --version
+    ```
 
 #### docker
 
-```console
-docker --version
-docker run hello-world
-```
+1. [Install docker](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/install-docker.md)
+1. Test
+
+    ```console
+    sudo docker --version
+    sudo docker run hello-world
+    ```
 
 ### Set environment variables for development
 
@@ -162,16 +191,16 @@ docker run hello-world
 
 ### Build docker image for development
 
-1. Option #1 - Using make command
+1. Variation #1 - Using make command
 
     ```console
     cd ${GIT_REPOSITORY_DIR}
-    make docker-build
+    sudo make docker-build
     ```
 
-1. Option #2 - Using docker command
+1. Variation #2 - Using docker command
 
     ```console
     cd ${GIT_REPOSITORY_DIR}
-    docker build --tag ${DOCKER_IMAGE_TAG} .
+    sudo docker build --tag ${DOCKER_IMAGE_TAG} .
     ```
