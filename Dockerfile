@@ -13,7 +13,6 @@ RUN apt-get update \
       curl \
       gnupg \
       jq \
-      libmysqlclient-dev \
       lsb-core \
       lsb-release \
       python-dev \
@@ -47,11 +46,6 @@ RUN wget https://cdn.mysql.com//Downloads/Connector-ODBC/8.0/mysql-connector-odb
  && mysql-connector-odbc-8.0.13-linux-ubuntu18.04-x86-64bit/bin/myodbc-installer -d -a -n "MySQL" -t "DRIVER=/usr/lib/x86_64-linux-gnu/odbc/libmyodbc8w.so;" \
  && rm mysql-connector-odbc-8.0.13-linux-ubuntu18.04-x86-64bit.tar.gz \
  && rm -rf mysql-connector-odbc-8.0.13-linux-ubuntu18.04-x86-64bit
-
-# Work-around. https://senzing.zendesk.com/hc/en-us/articles/360009212393-MySQL-V8-0-ODBC-client-alongside-V5-x-Server
-
-RUN wget https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-community-libs-8.0.12-1.el7.x86_64.rpm \
- && rpm2cpio mysql-community-libs-8.0.12-1.el7.x86_64.rpm | cpio -idmv
 
 # Install packages via pip.
 
