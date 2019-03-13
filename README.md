@@ -76,7 +76,10 @@ sudo docker build \
     ```console
     export SENZING_DIR=/opt/senzing
 
-    sudo docker run -it \
+    sudo docker run \
+      --interactive \
+      --rm \
+      --tty \
       --volume ${SENZING_DIR}:/opt/senzing \
       senzing/python-mysql-base
     ```
@@ -96,9 +99,12 @@ sudo docker build \
     export SENZING_DATABASE_URL="${DATABASE_PROTOCOL}://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_DATABASE}"
     export SENZING_DIR=/opt/senzing
 
-    sudo docker run -it  \
-      --volume ${SENZING_DIR}:/opt/senzing \
+    sudo docker run \
       --env SENZING_DATABASE_URL="${SENZING_DATABASE_URL}" \
+      --interactive \
+      --rm \
+      --tty \
+      --volume ${SENZING_DIR}:/opt/senzing \
       senzing/python-mysql-base
     ```
 
@@ -128,10 +134,13 @@ sudo docker build \
     export SENZING_DATABASE_URL="${DATABASE_PROTOCOL}://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_DATABASE}"
     export SENZING_DIR=/opt/senzing
 
-    sudo docker run -it  \
-      --volume ${SENZING_DIR}:/opt/senzing \
-      --net ${SENZING_NETWORK} \
+    sudo docker run \
       --env SENZING_DATABASE_URL="${SENZING_DATABASE_URL}" \
+      --interactive \
+      --net ${SENZING_NETWORK} \
+      --rm \
+      --tty \
+      --volume ${SENZING_DIR}:/opt/senzing \
       senzing/python-mysql-base
     ```
 
