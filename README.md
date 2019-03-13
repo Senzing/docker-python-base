@@ -1,12 +1,12 @@
-# docker-python-base
+# docker-python-mysql-base
 
 ## Overview
 
-The `senzing/python-base` docker image is a Senzing-ready, python 2.7 image.
+The `senzing/python-mysql-base` docker image is a Senzing-ready, python 2.7 image.
 The image can be used in a Dockerfile `FROM senzing/python-base` statement to simplify
 building apps with Senzing.
 
-To see how to use the `senzing/python-base` docker image, see
+To see how to use the `senzing/python-mysql-base` docker image, see
 [github.com/senzing/docker-python-demo](https://github.com/senzing/docker-python-demo).
 To see a demonstration of senzing, python, and mysql, see
 [github.com/senzing/docker-compose-mysql-demo](https://github.com/senzing/docker-compose-mysql-demo).
@@ -24,7 +24,6 @@ To see a demonstration of senzing, python, and mysql, see
     1. [Run docker container](#run-docker-container)
 1. [Develop](#develop)
     1. [Prerequisite software](#prerequisite-software)
-    1. [Set environment variables for development](#set-environment-variables-for-development)
     1. [Clone repository](#clone-repository)
     1. [Build docker image for development](#build-docker-image-for-development)
 
@@ -49,7 +48,9 @@ This repository assumes a working knowledge of:
 ### Build docker image
 
 ```console
-sudo docker build --tag senzing/python-base https://github.com/senzing/docker-python-base.git
+sudo docker build \
+  --tag senzing/python-mysql-base \
+  https://github.com/senzing/docker-python-mysql-base.git
 ```
 
 ### Create SENZING_DIR
@@ -61,22 +62,31 @@ sudo docker build --tag senzing/python-base https://github.com/senzing/docker-py
 
 - **SENZING_DATABASE_URL** -
   Database URI in the form: `${DATABASE_PROTOCOL}://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_DATABASE}`
+- **SENZING_DEBUG** -
+  Enable debug information. Values: 0=no debug; 1=debug. Default: 0.
 - **SENZING_DIR** -
   Location of Senzing libraries. Default: "/opt/senzing".
 
 ### Run docker container
 
-1. Variation #1 - Run the docker container with external volumes and internal database. Example:
+#### Variation 1
+
+1. Run the docker container with internal SQLite database and external volume.  Example:
 
     ```console
     export SENZING_DIR=/opt/senzing
 
-    sudo docker run -it \
+    sudo docker run \
+      --interactive \
+      --rm \
+      --tty \
       --volume ${SENZING_DIR}:/opt/senzing \
-      senzing/python-base
+      senzing/python-mysql-base
     ```
 
-1. Variation #2 - Run the docker container with external database and volumes.  Example:
+#### Variation 2
+
+1. Run the docker container with external database and volumes.  Example:
 
     ```console
     export DATABASE_PROTOCOL=mysql
@@ -89,13 +99,18 @@ sudo docker build --tag senzing/python-base https://github.com/senzing/docker-py
     export SENZING_DATABASE_URL="${DATABASE_PROTOCOL}://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_DATABASE}"
     export SENZING_DIR=/opt/senzing
 
-    sudo docker run -it  \
-      --volume ${SENZING_DIR}:/opt/senzing \
+    sudo docker run \
       --env SENZING_DATABASE_URL="${SENZING_DATABASE_URL}" \
-      senzing/python-base
+      --interactive \
+      --rm \
+      --tty \
+      --volume ${SENZING_DIR}:/opt/senzing \
+      senzing/python-mysql-base
     ```
 
-1. Variation #3 - Run the docker container accessing an external database in a docker network. Example:
+#### Variation 3
+
+1. Run the docker container accessing an external database in a docker network. Example:
 
    Determine docker network. Example:
 
@@ -119,11 +134,14 @@ sudo docker build --tag senzing/python-base https://github.com/senzing/docker-py
     export SENZING_DATABASE_URL="${DATABASE_PROTOCOL}://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_DATABASE}"
     export SENZING_DIR=/opt/senzing
 
-    sudo docker run -it  \
-      --volume ${SENZING_DIR}:/opt/senzing \
-      --net ${SENZING_NETWORK} \
+    sudo docker run \
       --env SENZING_DATABASE_URL="${SENZING_DATABASE_URL}" \
-      senzing/python-base
+      --interactive \
+      --net ${SENZING_NETWORK} \
+      --rm \
+      --tty \
+      --volume ${SENZING_DIR}:/opt/senzing \
+      senzing/python-mysql-base
     ```
 
 ## Develop
@@ -160,47 +178,40 @@ The following software programs need to be installed.
     sudo docker run hello-world
     ```
 
-### Set environment variables for development
+### Clone repository
 
-1. These variables may be modified, but do not need to be modified.
-   The variables are used throughout the installation procedure.
+1. Set these environment variable values:
 
     ```console
     export GIT_ACCOUNT=senzing
-    export GIT_REPOSITORY=docker-python-base
-    export DOCKER_IMAGE_TAG=senzing/python-base
+    export GIT_REPOSITORY=docker-python-mysql-base
     ```
 
-1. Synthesize environment variables.
+   Then follow steps in [clone-repository](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/clone-repository.md).
+
+1. After the repository has been cloned, be sure the following are set:
 
     ```console
     export GIT_ACCOUNT_DIR=~/${GIT_ACCOUNT}.git
     export GIT_REPOSITORY_DIR="${GIT_ACCOUNT_DIR}/${GIT_REPOSITORY}"
-    export GIT_REPOSITORY_URL="git@github.com:${GIT_ACCOUNT}/${GIT_REPOSITORY}.git"
-    ```
-
-### Clone repository
-
-1. Get repository.
-
-    ```console
-    mkdir --parents ${GIT_ACCOUNT_DIR}
-    cd  ${GIT_ACCOUNT_DIR}
-    git clone ${GIT_REPOSITORY_URL}
     ```
 
 ### Build docker image for development
 
-1. Variation #1 - Using make command
+1. Variation #1 - Using `make` command.
 
     ```console
     cd ${GIT_REPOSITORY_DIR}
     sudo make docker-build
     ```
 
-1. Variation #2 - Using docker command
+    Note: `sudo make docker-build-base` can be used to create cached docker layers.
+
+1. Variation #2 - Using `docker` command.
 
     ```console
+    export DOCKER_IMAGE_NAME=senzing/python-mysql-base
+
     cd ${GIT_REPOSITORY_DIR}
-    sudo docker build --tag ${DOCKER_IMAGE_TAG} .
+    sudo docker build --tag ${DOCKER_IMAGE_NAME} .
     ```
