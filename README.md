@@ -71,7 +71,7 @@ sudo docker build \
 
 #### Variation 1
 
-1. Run the docker container with internal SQLite database and external volume.  Example:
+1. Run the docker container accessing an internal SQLite database and external volume.  Example:
 
     ```console
     export SENZING_DIR=/opt/senzing
@@ -86,7 +86,7 @@ sudo docker build \
 
 #### Variation 2
 
-1. Run the docker container with external database and volumes.  Example:
+1. Run the docker container accessing an external database and volumes.  Example:
 
     ```console
     export DATABASE_PROTOCOL=mysql
