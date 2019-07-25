@@ -1,5 +1,11 @@
 # docker-python-mysql-base
 
+## :no_entry: Deprecated
+
+Deprecated in favor of [Senzing/docker-senzing-base](https://github.com/Senzing/docker-senzing-base)
+
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+
 ## Overview
 
 The `senzing/python-mysql-base` docker image is a Senzing-ready, python 2.7 image.
